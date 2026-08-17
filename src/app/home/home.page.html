@@ -1,20 +1,35 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Calculadora</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" class="display">
+        <div class="display__expression">{{ expression }}</div>
+        <div class="display__value">{{ displayValue }}</div>
+      </ion-col>
+    </ion-row>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+    <ion-row>
+      @for (button of buttons; track button.value) {
+      <ion-col [size]="getSize(button)" class="button-col">
+        <ion-button
+          class="key"
+          [class.key--operator]="button.type === 'operator'"
+          [class.key--equal]="button.type === 'equal'"
+          [class.key--function]="button.type === 'function'"
+          [class.key--action]="button.type === 'action'"
+          [class.key--clear]="button.value === 'clear'"
+          [class.key--active]="button.value === 'angle'"
+          (click)="onButtonPress(button)"
+        >
+          {{ getLabel(button) }}
+        </ion-button>
+      </ion-col>
+      }
+    </ion-row>
+  </ion-grid>
 </ion-content>

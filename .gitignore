@@ -68,3 +68,24 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Capacitor / Android
+# La carpeta /android SÍ se sube: es parte del proyecto.
+# Se ignora lo que genera Gradle en cada compilación y lo que
+# depende de la máquina de cada quien.
+/android/app/build/
+/android/build/
+/android/.gradle/
+/android/captures/
+/android/.idea/
+/android/app/src/main/assets/public/
+
+# Contiene la ruta ABSOLUTA a TU SDK. Si se sube, a quien clone
+# el repo le falla la compilación con una ruta que no existe.
+/android/local.properties
+
+# Artefactos compilados y llaves de firma
+*.apk
+*.aab
+*.keystore
+*.jks

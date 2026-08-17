@@ -1,27 +1,199 @@
-#container {
-  text-align: center;
+/* =================================================================
+   Calculadora — Neumorphism
+   Regla de oro: TODO es del mismo color del fondo. El relieve lo dan
+   dos sombras opuestas (una clara arriba-izq, una oscura abajo-der).
+   Si le pones un fondo distinto a una tecla, el efecto se rompe.
+   ================================================================= */
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+:host {
+  /* --- Paleta --- */
+  --neu-bg: #e8ebf2;
+  --neu-dark: #c2c8d6; // sombra que hunde
+  --neu-light: #ffffff; // luz que levanta
+  --neu-text: #4a5164;
+  --neu-text-soft: #99a1b3;
+  --neu-accent: #5b6ee0; // operadores e igual
+  --neu-danger: #e0655b; // AC y errores
+
+  /* --- Geometría --- */
+  --neu-gap: 6px; // mitad de la separación entre teclas
+  --neu-key-height: clamp(46px, 8.5vh, 64px);
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+/* Relieve: la pieza sobresale. */
+@mixin raised($d: 5px, $b: 10px) {
+  box-shadow:
+    #{$d} #{$d} #{$b} var(--neu-dark),
+    -#{$d} -#{$d} #{$b} var(--neu-light);
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+/* Hundido: la pieza se mete en el fondo. */
+@mixin pressed($d: 4px, $b: 8px) {
+  box-shadow:
+    inset #{$d} #{$d} #{$b} var(--neu-dark),
+    inset -#{$d} -#{$d} #{$b} var(--neu-light);
+}
 
-  color: #8c8c8c;
+/* -----------------------------------------------------------------
+   Fondo general
+   ----------------------------------------------------------------- */
 
+ion-content {
+  --background: var(--neu-bg);
+}
+
+ion-toolbar {
+  --background: var(--neu-bg);
+  --color: var(--neu-text);
+  --border-width: 0;
+}
+
+ion-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--neu-text-soft);
+}
+
+ion-grid {
+  max-width: 430px;
+  margin: 0 auto;
+  /* 20px de aire para que la sombra de las teclas del borde no se corte */
+  padding: 20px;
+}
+
+/* -----------------------------------------------------------------
+   Pantalla (hundida, dos líneas)
+   ----------------------------------------------------------------- */
+
+.display {
+  @include pressed(6px, 12px);
+
+  border-radius: 20px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  min-height: 110px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.display__expression {
+  min-height: 20px; // reserva el espacio: la pantalla no salta
+  max-width: 100%;
+  font-size: 0.9rem;
+  color: var(--neu-text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.display__value {
+  max-width: 100%;
+  font-size: clamp(2rem, 11vw, 2.8rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--neu-text);
+  font-variant-numeric: tabular-nums; // los dígitos no bailan al cambiar
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+/* -----------------------------------------------------------------
+   Teclas
+   ----------------------------------------------------------------- */
+
+.button-col {
+  padding: var(--neu-gap);
+}
+
+.key {
+  /* ion-button no acepta box-shadow directo: renderiza un <button>
+     interno (.button-native) y solo lee estas variables. */
+  --background: var(--neu-bg);
+  --background-hover: var(--neu-bg);
+  --background-hover-opacity: 1;
+  --background-activated: var(--neu-bg);
+  --background-activated-opacity: 1;
+  --background-focused: var(--neu-bg);
+  --background-focused-opacity: 1;
+  --color: var(--neu-text);
+  --border-radius: 18px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --ripple-color: transparent; // la onda rompe la ilusión de relieve
+  --box-shadow: 5px 5px 10px var(--neu-dark), -5px -5px 10px var(--neu-light);
+
+  display: block;
+  width: 100%;
+  height: var(--neu-key-height);
   margin: 0;
+
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-transform: none; // Material las pone en mayúscula por defecto
+  letter-spacing: normal;
+
+  /* Al presionar se hunde. Es todo el efecto que necesita. */
+  &:active {
+    --box-shadow:
+      inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+  }
 }
 
-#container a {
-  text-decoration: none;
+/* --- Variantes: solo cambia el color del texto, nunca el fondo --- */
+
+.key--operator {
+  --color: var(--neu-accent);
+  font-size: 1.45rem;
+}
+
+.key--equal {
+  --color: var(--neu-accent);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.key--function,
+.key--action {
+  --color: var(--neu-text-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* AC pide atención sin gritar */
+.key--action.key--clear {
+  --color: var(--neu-danger);
+  font-weight: 700;
+}
+
+/* DEG/RAD queda hundido: se ve "encendido" porque es un modo activo. */
+.key--active {
+  --box-shadow:
+    inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+  --color: var(--neu-accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+/* -----------------------------------------------------------------
+   Modo oscuro: solo cambian las dos sombras
+   (la "luz" deja de ser blanca y pasa a ser un gris más claro)
+   ----------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --neu-bg: #2b2f3a;
+    --neu-dark: #21242c;
+    --neu-light: #353a48;
+    --neu-text: #e2e6ef;
+    --neu-text-soft: #868da0;
+    --neu-accent: #8b9bff;
+    --neu-danger: #ff8177;
+  }
 }
