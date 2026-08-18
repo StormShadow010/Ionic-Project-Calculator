@@ -3,6 +3,7 @@ export type ButtonType =
   | 'decimal' // el punto
   | 'operator' // + - * / ^
   | 'function' // sin, cos, tan
+  | 'constant' // π
   | 'equal' // =
   | 'action'; // AC, borrar, DEG/RAD
 

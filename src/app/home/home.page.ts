@@ -73,7 +73,8 @@ export class HomePage {
 
     { label: '0', value: '0', type: 'number' },
     { label: '.', value: '.', type: 'decimal' },
-    { label: '=', value: '=', type: 'equal', size: 6 },
+    { label: 'π', value: 'pi', type: 'constant' },
+    { label: '=', value: '=', type: 'equal' },
   ];
 
   /** El botón de ángulo muestra el modo activo; los demás su etiqueta fija. */
@@ -136,6 +137,8 @@ export class HomePage {
       } else if (!this.displayValue.includes('.')) {
         this.displayValue += '.';
       }
+    } else if (button.type === 'constant') {
+      this.applyPi();
     } else if (button.type === 'function') {
       this.applyFunction(button.value, button.label);
     } else if (button.type === 'operator') {
@@ -173,6 +176,27 @@ export class HomePage {
       this.operator = '';
       this.isNewEntry = true; // el resultado no se sigue tecleando
     }
+  }
+
+  /**
+   * Inserta π.
+   * Si el usuario venía escribiendo un número, hay multiplicación
+   * implícita: "2" seguido de π da 2π. Si no, π reemplaza la pantalla.
+   */
+  private applyPi() {
+    const typing = !this.isNewEntry && this.displayValue !== '0';
+
+    if (typing) {
+      const factor = parseFloat(this.displayValue);
+      this.displayValue = this.clean(factor * Math.PI);
+    } else {
+      if (!this.operator) {
+        this.expression = '';
+      }
+      this.displayValue = this.clean(Math.PI);
+    }
+
+    this.isNewEntry = true; // π es un valor cerrado: no se le pegan dígitos
   }
 
   /**

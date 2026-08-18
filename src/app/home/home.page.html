@@ -18,7 +18,7 @@
       <ion-col [size]="getSize(button)" class="button-col">
         <ion-button
           class="key"
-          [class.key--operator]="button.type === 'operator'"
+          [class.key--operator]="button.type === 'operator' || button.type === 'constant'"
           [class.key--equal]="button.type === 'equal'"
           [class.key--function]="button.type === 'function'"
           [class.key--action]="button.type === 'action'"
